@@ -3,7 +3,7 @@
         <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" @click="findBookingDates(data.tour_id); findBookingPassengers();" dark v-bind="attrs"
                 v-on="on">
-                EDIT
+                EDIT {{ data.id }}
             </v-btn>
         </template>
         <v-card>
@@ -17,7 +17,7 @@
             <v-card-text>
                 <v-form>
                     <v-container>
-                        <v-row>
+                        <v-row v-show="loader == false">
                             <v-col cols="12" sm="12">
                                 <v-text-field :value="data.tour.name" label="Tour Name" outlined readonly>
                                 </v-text-field>
@@ -119,6 +119,10 @@
                                 </v-card>
                             </v-col>
                         </v-row>
+
+                        <v-skeleton-loader v-show="loader == true" class="mx-auto" type="card">
+                        </v-skeleton-loader>
+
                     </v-container>
                 </v-form>
                 <v-snackbar v-model="snackbar" class="text-center" :color="sbcolor" top right>
@@ -155,7 +159,8 @@ export default {
             datePicker: [],
             snackbar: false,
             sbcolor: "",
-            msg: ""
+            msg: "",
+            loader: false,
         }
     },
     computed: {
@@ -170,8 +175,12 @@ export default {
             }
         },
         async findBookingPassengers() {
+            this.loader = true;
             try {
                 const res = await this.$store.dispatch('booking/findBookingPassengers', this.data.id)
+                if (res.status === 200) {
+                    this.loader = false;
+                }
             } catch (err) {
                 console.log(err.response)
             }

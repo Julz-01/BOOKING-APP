@@ -1,12 +1,12 @@
 <template>
-    <v-dialog v-model="dialog[data.id]" width="800">
+    <v-dialog v-model="dialog[data.id]" width="800" persistent>
         <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on" @click="findTour(data.id)">
                 EDIT
             </v-btn>
         </template>
 
-        <v-card>
+        <v-card v-if="dialogId == data.id">
             <v-card-title class="text-h5 grey lighten-2">
                 {{ tour_data.name }}
             </v-card-title>
@@ -82,17 +82,20 @@
 
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="red" text @click="$set(dialog, data.id, false)">
+                <v-btn color="red" text @click="$set(dialog, data.id, false), dialogId = null">
                     CLOSE
                 </v-btn>
                 <v-btn color="primary" :disabled="tour_data.name == '' || tour_data.itinerary == ''" text
                     @click="updateTour(data.id)">SUBMIT</v-btn>
             </v-card-actions>
         </v-card>
+
+        <v-skeleton-loader v-show="loader == true" class="mx-auto" max-width="800" type="card"></v-skeleton-loader>
+
         <v-snackbar v-model="snackbar" class="text-center" :color="sbcolor" top right>
             <div class="text-center">{{ msg }}</div>
         </v-snackbar>
-    </v-dialog>
+    </v-dialog> 
 </template>
 
 <script>
@@ -111,7 +114,9 @@ export default {
             datePick: [],
             snackbar: false,
             sbcolor: "",
-            msg: ""
+            msg: "",
+            dialogId: null,
+            loader: false,
         }
     },
     computed: {
@@ -127,9 +132,12 @@ export default {
             this.tour_data.textFields.splice(index, 1)
         },
         async findTour(id) {
+            this.loader = true;
             try {
                 const res = await this.$store.dispatch('tour/findTour', id)
                 if (res.status === 200) {
+                    this.loader = false;
+                    this.dialogId = id;
                     this.tour_data.name = res.data.tour.name;
                     this.tour_data.itinerary = res.data.tour.itinerary;
                 }

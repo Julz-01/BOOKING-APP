@@ -2313,6 +2313,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['data'],
@@ -2343,7 +2347,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       datePicker: [],
       snackbar: false,
       sbcolor: "",
-      msg: ""
+      msg: "",
+      loader: false
     };
   },
   computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapState)('booking', ['bookingDates', 'bookingPassengers'])),
@@ -2388,26 +2393,32 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.prev = 0;
-                _context2.next = 3;
+                _this2.loader = true;
+                _context2.prev = 1;
+                _context2.next = 4;
                 return _this2.$store.dispatch('booking/findBookingPassengers', _this2.data.id);
 
-              case 3:
+              case 4:
                 res = _context2.sent;
-                _context2.next = 9;
+
+                if (res.status === 200) {
+                  _this2.loader = false;
+                }
+
+                _context2.next = 11;
                 break;
 
-              case 6:
-                _context2.prev = 6;
-                _context2.t0 = _context2["catch"](0);
+              case 8:
+                _context2.prev = 8;
+                _context2.t0 = _context2["catch"](1);
                 console.log(_context2.t0.response);
 
-              case 9:
+              case 11:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[0, 6]]);
+        }, _callee2, null, [[1, 8]]);
       }))();
     },
     removeBookingPassengers: function removeBookingPassengers(id, booking_id) {
@@ -2646,6 +2657,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['data'],
@@ -2660,7 +2674,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       datePick: [],
       snackbar: false,
       sbcolor: "",
-      msg: ""
+      msg: "",
+      dialogId: null,
+      loader: false
     };
   },
   computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapState)('tour', ['tour'])),
@@ -2682,32 +2698,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.prev = 0;
-                _context.next = 3;
+                _this.loader = true;
+                _context.prev = 1;
+                _context.next = 4;
                 return _this.$store.dispatch('tour/findTour', id);
 
-              case 3:
+              case 4:
                 res = _context.sent;
 
                 if (res.status === 200) {
+                  _this.loader = false;
+                  _this.dialogId = id;
                   _this.tour_data.name = res.data.tour.name;
                   _this.tour_data.itinerary = res.data.tour.itinerary;
                 }
 
-                _context.next = 10;
+                _context.next = 11;
                 break;
 
-              case 7:
-                _context.prev = 7;
-                _context.t0 = _context["catch"](0);
+              case 8:
+                _context.prev = 8;
+                _context.t0 = _context["catch"](1);
                 console.log(_context.t0.response);
 
-              case 10:
+              case 11:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[0, 7]]);
+        }, _callee, null, [[1, 8]]);
       }))();
     },
     updateTour: function updateTour(id) {
@@ -5341,7 +5360,11 @@ var render = function () {
                   ),
                   on
                 ),
-                [_vm._v("\n            EDIT\n        ")]
+                [
+                  _vm._v(
+                    "\n            EDIT " + _vm._s(_vm.data.id) + "\n        "
+                  ),
+                ]
               ),
             ]
           },
@@ -5394,6 +5417,16 @@ var render = function () {
                     [
                       _c(
                         "v-row",
+                        {
+                          directives: [
+                            {
+                              name: "show",
+                              rawName: "v-show",
+                              value: _vm.loader == false,
+                              expression: "loader == false",
+                            },
+                          ],
+                        },
                         [
                           _c(
                             "v-col",
@@ -6050,6 +6083,19 @@ var render = function () {
                         ],
                         1
                       ),
+                      _vm._v(" "),
+                      _c("v-skeleton-loader", {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.loader == true,
+                            expression: "loader == true",
+                          },
+                        ],
+                        staticClass: "mx-auto",
+                        attrs: { type: "card" },
+                      }),
                     ],
                     1
                   ),
@@ -6112,7 +6158,7 @@ var render = function () {
   return _c(
     "v-dialog",
     {
-      attrs: { width: "800" },
+      attrs: { width: "800", persistent: "" },
       scopedSlots: _vm._u([
         {
           key: "activator",
@@ -6154,326 +6200,352 @@ var render = function () {
     },
     [
       _vm._v(" "),
-      _c(
-        "v-card",
-        [
-          _c("v-card-title", { staticClass: "text-h5 grey lighten-2" }, [
-            _vm._v(
-              "\n            " + _vm._s(_vm.tour_data.name) + "\n        "
-            ),
-          ]),
-          _vm._v(" "),
-          _c(
-            "v-card-text",
+      _vm.dialogId == _vm.data.id
+        ? _c(
+            "v-card",
             [
+              _c("v-card-title", { staticClass: "text-h5 grey lighten-2" }, [
+                _vm._v(
+                  "\n            " + _vm._s(_vm.tour_data.name) + "\n        "
+                ),
+              ]),
+              _vm._v(" "),
               _c(
-                "v-form",
+                "v-card-text",
                 [
                   _c(
-                    "v-container",
+                    "v-form",
                     [
                       _c(
-                        "v-row",
+                        "v-container",
                         [
                           _c(
-                            "v-col",
-                            { attrs: { cols: "12", sm: "12" } },
+                            "v-row",
                             [
-                              _c("v-text-field", {
-                                attrs: { label: "Tour Name", outlined: "" },
-                                model: {
-                                  value: _vm.tour_data.name,
-                                  callback: function ($$v) {
-                                    _vm.$set(_vm.tour_data, "name", $$v)
-                                  },
-                                  expression: "tour_data.name",
-                                },
-                              }),
-                              _vm._v(" "),
-                              _c("v-textarea", {
-                                attrs: {
-                                  outlined: "",
-                                  name: "input-7-4",
-                                  label: "Itinerary",
-                                },
-                                model: {
-                                  value: _vm.tour_data.itinerary,
-                                  callback: function ($$v) {
-                                    _vm.$set(_vm.tour_data, "itinerary", $$v)
-                                  },
-                                  expression: "tour_data.itinerary",
-                                },
-                              }),
-                              _vm._v(" "),
                               _c(
-                                "v-btn",
-                                {
-                                  staticClass: "primary float-right",
-                                  on: {
-                                    click: function ($event) {
-                                      return _vm.add()
+                                "v-col",
+                                { attrs: { cols: "12", sm: "12" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: { label: "Tour Name", outlined: "" },
+                                    model: {
+                                      value: _vm.tour_data.name,
+                                      callback: function ($$v) {
+                                        _vm.$set(_vm.tour_data, "name", $$v)
+                                      },
+                                      expression: "tour_data.name",
                                     },
-                                  },
-                                },
-                                [_vm._v("ADD DATE")]
+                                  }),
+                                  _vm._v(" "),
+                                  _c("v-textarea", {
+                                    attrs: {
+                                      outlined: "",
+                                      name: "input-7-4",
+                                      label: "Itinerary",
+                                    },
+                                    model: {
+                                      value: _vm.tour_data.itinerary,
+                                      callback: function ($$v) {
+                                        _vm.$set(
+                                          _vm.tour_data,
+                                          "itinerary",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "tour_data.itinerary",
+                                    },
+                                  }),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      staticClass: "primary float-right",
+                                      on: {
+                                        click: function ($event) {
+                                          return _vm.add()
+                                        },
+                                      },
+                                    },
+                                    [_vm._v("ADD DATE")]
+                                  ),
+                                ],
+                                1
                               ),
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12", md: "12" } },
-                            [
+                              _vm._v(" "),
                               _c(
-                                "v-card",
+                                "v-col",
+                                { attrs: { cols: "12", md: "12" } },
                                 [
                                   _c(
-                                    "v-card-text",
+                                    "v-card",
                                     [
-                                      _vm._l(
-                                        _vm.tour.tour_dates,
-                                        function (tour_date) {
-                                          return _c(
-                                            "v-list-item",
-                                            { key: tour_date.id },
-                                            [
-                                              _c("v-list-item-content", [
-                                                _c(
-                                                  "span",
-                                                  {
-                                                    class:
-                                                      tour_date.status == 0
-                                                        ? "red--text"
-                                                        : "dark--text",
-                                                  },
-                                                  [
-                                                    _vm._v(
-                                                      _vm._s(tour_date.date)
-                                                    ),
-                                                  ]
-                                                ),
-                                              ]),
-                                              _vm._v(" "),
-                                              _c(
-                                                "v-list-item-action",
-                                                [
-                                                  tour_date.status == 1
-                                                    ? _c(
-                                                        "v-btn",
-                                                        {
-                                                          staticClass: "error",
-                                                          on: {
-                                                            click: function (
-                                                              $event
-                                                            ) {
-                                                              return _vm.disableTourDate(
-                                                                tour_date.id,
-                                                                _vm.data.id
-                                                              )
-                                                            },
-                                                          },
-                                                        },
-                                                        [
-                                                          _c("v-icon", [
-                                                            _vm._v(
-                                                              " mdi-close "
-                                                            ),
-                                                          ]),
-                                                        ],
-                                                        1
-                                                      )
-                                                    : _c(
-                                                        "v-btn",
-                                                        {
-                                                          staticClass:
-                                                            "success",
-                                                          on: {
-                                                            click: function (
-                                                              $event
-                                                            ) {
-                                                              return _vm.enableTourDate(
-                                                                tour_date.id,
-                                                                _vm.data.id
-                                                              )
-                                                            },
-                                                          },
-                                                        },
-                                                        [
-                                                          _c("v-icon", [
-                                                            _vm._v(
-                                                              " mdi-check "
-                                                            ),
-                                                          ]),
-                                                        ],
-                                                        1
-                                                      ),
-                                                ],
-                                                1
-                                              ),
-                                            ],
-                                            1
-                                          )
-                                        }
-                                      ),
-                                      _vm._v(" "),
-                                      _vm._l(
-                                        _vm.tour_data.textFields,
-                                        function (textField, i) {
-                                          return _c(
-                                            "div",
-                                            { key: i },
-                                            [
-                                              _c(
+                                      _c(
+                                        "v-card-text",
+                                        [
+                                          _vm._l(
+                                            _vm.tour.tour_dates,
+                                            function (tour_date) {
+                                              return _c(
                                                 "v-list-item",
+                                                { key: tour_date.id },
                                                 [
-                                                  _c(
-                                                    "v-list-item-content",
-                                                    [
-                                                      _c(
-                                                        "v-menu",
-                                                        {
-                                                          attrs: {
-                                                            "close-on-content-click": false,
-                                                            "nudge-right": 40,
-                                                            transition:
-                                                              "scale-transition",
-                                                            "offset-y": "",
-                                                            "min-width": "auto",
-                                                          },
-                                                          scopedSlots: _vm._u(
-                                                            [
-                                                              {
-                                                                key: "activator",
-                                                                fn: function (
-                                                                  ref
-                                                                ) {
-                                                                  var on =
-                                                                    ref.on
-                                                                  var attrs =
-                                                                    ref.attrs
-                                                                  return [
-                                                                    _c(
-                                                                      "v-text-field",
-                                                                      _vm._g(
-                                                                        _vm._b(
-                                                                          {
-                                                                            attrs:
-                                                                              {
-                                                                                label:
-                                                                                  "Date",
-                                                                                "prepend-icon":
-                                                                                  "mdi-calendar",
-                                                                                readonly:
-                                                                                  "",
-                                                                              },
-                                                                            model:
-                                                                              {
-                                                                                value:
-                                                                                  textField.date,
-                                                                                callback:
-                                                                                  function (
-                                                                                    $$v
-                                                                                  ) {
-                                                                                    _vm.$set(
-                                                                                      textField,
-                                                                                      "date",
-                                                                                      $$v
-                                                                                    )
-                                                                                  },
-                                                                                expression:
-                                                                                  "textField.date",
-                                                                              },
-                                                                          },
-                                                                          "v-text-field",
-                                                                          attrs,
-                                                                          false
-                                                                        ),
-                                                                        on
-                                                                      )
-                                                                    ),
-                                                                  ]
-                                                                },
-                                                              },
-                                                            ],
-                                                            null,
-                                                            true
-                                                          ),
-                                                          model: {
-                                                            value:
-                                                              _vm.datePick[i],
-                                                            callback: function (
-                                                              $$v
-                                                            ) {
-                                                              _vm.$set(
-                                                                _vm.datePick,
-                                                                i,
-                                                                $$v
-                                                              )
-                                                            },
-                                                            expression:
-                                                              "datePick[i]",
-                                                          },
-                                                        },
-                                                        [
-                                                          _vm._v(
-                                                            "s\n                                                    "
-                                                          ),
-                                                          _c("v-date-picker", {
-                                                            on: {
-                                                              input: function (
-                                                                $event
-                                                              ) {
-                                                                _vm.datePick[
-                                                                  i
-                                                                ] = false
-                                                              },
-                                                            },
-                                                            model: {
-                                                              value:
-                                                                textField.date,
-                                                              callback:
-                                                                function ($$v) {
-                                                                  _vm.$set(
-                                                                    textField,
-                                                                    "date",
-                                                                    $$v
-                                                                  )
-                                                                },
-                                                              expression:
-                                                                "textField.date",
-                                                            },
-                                                          }),
-                                                        ],
-                                                        1
-                                                      ),
-                                                    ],
-                                                    1
-                                                  ),
+                                                  _c("v-list-item-content", [
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        class:
+                                                          tour_date.status == 0
+                                                            ? "red--text"
+                                                            : "dark--text",
+                                                      },
+                                                      [
+                                                        _vm._v(
+                                                          _vm._s(tour_date.date)
+                                                        ),
+                                                      ]
+                                                    ),
+                                                  ]),
                                                   _vm._v(" "),
                                                   _c(
                                                     "v-list-item-action",
                                                     [
-                                                      _c(
-                                                        "v-btn",
-                                                        {
-                                                          staticClass: "error",
-                                                          on: {
-                                                            click: function (
-                                                              $event
-                                                            ) {
-                                                              return _vm.remove(
-                                                                i
-                                                              )
+                                                      tour_date.status == 1
+                                                        ? _c(
+                                                            "v-btn",
+                                                            {
+                                                              staticClass:
+                                                                "error",
+                                                              on: {
+                                                                click:
+                                                                  function (
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.disableTourDate(
+                                                                      tour_date.id,
+                                                                      _vm.data
+                                                                        .id
+                                                                    )
+                                                                  },
+                                                              },
                                                             },
-                                                          },
-                                                        },
+                                                            [
+                                                              _c("v-icon", [
+                                                                _vm._v(
+                                                                  " mdi-close "
+                                                                ),
+                                                              ]),
+                                                            ],
+                                                            1
+                                                          )
+                                                        : _c(
+                                                            "v-btn",
+                                                            {
+                                                              staticClass:
+                                                                "success",
+                                                              on: {
+                                                                click:
+                                                                  function (
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.enableTourDate(
+                                                                      tour_date.id,
+                                                                      _vm.data
+                                                                        .id
+                                                                    )
+                                                                  },
+                                                              },
+                                                            },
+                                                            [
+                                                              _c("v-icon", [
+                                                                _vm._v(
+                                                                  " mdi-check "
+                                                                ),
+                                                              ]),
+                                                            ],
+                                                            1
+                                                          ),
+                                                    ],
+                                                    1
+                                                  ),
+                                                ],
+                                                1
+                                              )
+                                            }
+                                          ),
+                                          _vm._v(" "),
+                                          _vm._l(
+                                            _vm.tour_data.textFields,
+                                            function (textField, i) {
+                                              return _c(
+                                                "div",
+                                                { key: i },
+                                                [
+                                                  _c(
+                                                    "v-list-item",
+                                                    [
+                                                      _c(
+                                                        "v-list-item-content",
                                                         [
-                                                          _c("v-icon", [
-                                                            _vm._v(
-                                                              " mdi-delete "
-                                                            ),
-                                                          ]),
+                                                          _c(
+                                                            "v-menu",
+                                                            {
+                                                              attrs: {
+                                                                "close-on-content-click": false,
+                                                                "nudge-right": 40,
+                                                                transition:
+                                                                  "scale-transition",
+                                                                "offset-y": "",
+                                                                "min-width":
+                                                                  "auto",
+                                                              },
+                                                              scopedSlots:
+                                                                _vm._u(
+                                                                  [
+                                                                    {
+                                                                      key: "activator",
+                                                                      fn: function (
+                                                                        ref
+                                                                      ) {
+                                                                        var on =
+                                                                          ref.on
+                                                                        var attrs =
+                                                                          ref.attrs
+                                                                        return [
+                                                                          _c(
+                                                                            "v-text-field",
+                                                                            _vm._g(
+                                                                              _vm._b(
+                                                                                {
+                                                                                  attrs:
+                                                                                    {
+                                                                                      label:
+                                                                                        "Date",
+                                                                                      "prepend-icon":
+                                                                                        "mdi-calendar",
+                                                                                      readonly:
+                                                                                        "",
+                                                                                    },
+                                                                                  model:
+                                                                                    {
+                                                                                      value:
+                                                                                        textField.date,
+                                                                                      callback:
+                                                                                        function (
+                                                                                          $$v
+                                                                                        ) {
+                                                                                          _vm.$set(
+                                                                                            textField,
+                                                                                            "date",
+                                                                                            $$v
+                                                                                          )
+                                                                                        },
+                                                                                      expression:
+                                                                                        "textField.date",
+                                                                                    },
+                                                                                },
+                                                                                "v-text-field",
+                                                                                attrs,
+                                                                                false
+                                                                              ),
+                                                                              on
+                                                                            )
+                                                                          ),
+                                                                        ]
+                                                                      },
+                                                                    },
+                                                                  ],
+                                                                  null,
+                                                                  true
+                                                                ),
+                                                              model: {
+                                                                value:
+                                                                  _vm.datePick[
+                                                                    i
+                                                                  ],
+                                                                callback:
+                                                                  function (
+                                                                    $$v
+                                                                  ) {
+                                                                    _vm.$set(
+                                                                      _vm.datePick,
+                                                                      i,
+                                                                      $$v
+                                                                    )
+                                                                  },
+                                                                expression:
+                                                                  "datePick[i]",
+                                                              },
+                                                            },
+                                                            [
+                                                              _vm._v(
+                                                                "s\n                                                    "
+                                                              ),
+                                                              _c(
+                                                                "v-date-picker",
+                                                                {
+                                                                  on: {
+                                                                    input:
+                                                                      function (
+                                                                        $event
+                                                                      ) {
+                                                                        _vm.datePick[
+                                                                          i
+                                                                        ] = false
+                                                                      },
+                                                                  },
+                                                                  model: {
+                                                                    value:
+                                                                      textField.date,
+                                                                    callback:
+                                                                      function (
+                                                                        $$v
+                                                                      ) {
+                                                                        _vm.$set(
+                                                                          textField,
+                                                                          "date",
+                                                                          $$v
+                                                                        )
+                                                                      },
+                                                                    expression:
+                                                                      "textField.date",
+                                                                  },
+                                                                }
+                                                              ),
+                                                            ],
+                                                            1
+                                                          ),
+                                                        ],
+                                                        1
+                                                      ),
+                                                      _vm._v(" "),
+                                                      _c(
+                                                        "v-list-item-action",
+                                                        [
+                                                          _c(
+                                                            "v-btn",
+                                                            {
+                                                              staticClass:
+                                                                "error",
+                                                              on: {
+                                                                click:
+                                                                  function (
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.remove(
+                                                                      i
+                                                                    )
+                                                                  },
+                                                              },
+                                                            },
+                                                            [
+                                                              _c("v-icon", [
+                                                                _vm._v(
+                                                                  " mdi-delete "
+                                                                ),
+                                                              ]),
+                                                            ],
+                                                            1
+                                                          ),
                                                         ],
                                                         1
                                                       ),
@@ -6482,14 +6554,14 @@ var render = function () {
                                                   ),
                                                 ],
                                                 1
-                                              ),
-                                            ],
-                                            1
-                                          )
-                                        }
+                                              )
+                                            }
+                                          ),
+                                        ],
+                                        2
                                       ),
                                     ],
-                                    2
+                                    1
                                   ),
                                 ],
                                 1
@@ -6506,53 +6578,66 @@ var render = function () {
                 ],
                 1
               ),
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("v-divider"),
-          _vm._v(" "),
-          _c(
-            "v-card-actions",
-            [
-              _c("v-spacer"),
+              _vm._v(" "),
+              _c("v-divider"),
               _vm._v(" "),
               _c(
-                "v-btn",
-                {
-                  attrs: { color: "red", text: "" },
-                  on: {
-                    click: function ($event) {
-                      return _vm.$set(_vm.dialog, _vm.data.id, false)
+                "v-card-actions",
+                [
+                  _c("v-spacer"),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { color: "red", text: "" },
+                      on: {
+                        click: function ($event) {
+                          _vm.$set(_vm.dialog, _vm.data.id, false),
+                            (_vm.dialogId = null)
+                        },
+                      },
                     },
-                  },
-                },
-                [_vm._v("\n                CLOSE\n            ")]
-              ),
-              _vm._v(" "),
-              _c(
-                "v-btn",
-                {
-                  attrs: {
-                    color: "primary",
-                    disabled:
-                      _vm.tour_data.name == "" || _vm.tour_data.itinerary == "",
-                    text: "",
-                  },
-                  on: {
-                    click: function ($event) {
-                      return _vm.updateTour(_vm.data.id)
+                    [_vm._v("\n                CLOSE\n            ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: {
+                        color: "primary",
+                        disabled:
+                          _vm.tour_data.name == "" ||
+                          _vm.tour_data.itinerary == "",
+                        text: "",
+                      },
+                      on: {
+                        click: function ($event) {
+                          return _vm.updateTour(_vm.data.id)
+                        },
+                      },
                     },
-                  },
-                },
-                [_vm._v("SUBMIT")]
+                    [_vm._v("SUBMIT")]
+                  ),
+                ],
+                1
               ),
             ],
             1
-          ),
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c("v-skeleton-loader", {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.loader == true,
+            expression: "loader == true",
+          },
         ],
-        1
-      ),
+        staticClass: "mx-auto",
+        attrs: { "max-width": "800", type: "card" },
+      }),
       _vm._v(" "),
       _c(
         "v-snackbar",
